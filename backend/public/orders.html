@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Orders - QuickShip</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: white !important;
+      background-image: none !important;
+      font-family: Arial, sans-serif;
+    }
+
+    .hero2 {
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 70px;
+    }
+    .no-orders-wrapper {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.no-orders-img {
+  width: 300px;
+  max-width: 80%;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+}
+
+.no-orders {
+  color: #555;
+  font-size: 1.3rem;
+  margin-top: 0;
+}
+
+    .order {
+      background-color: #e6f5fa; /* light blue */
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 600px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-orders {
+      text-align: center;
+      color: gray;
+      font-size: 1.2em;
+    }
+
+    .navbar a {
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header/Navbar -->
+  <header>
+    <div class="navbar">
+      <div class="navlogo border"></div>
+      <div class="logo"></div>
+      <div class="panel">
+        <a href="index.html" id="1">Home</a>
+        <a href="about.html" id="2">About Us</a>
+        <a href="prohibited.html" id="3">Prohibited Items</a>
+        <a href="contact.html" id="4">Contact</a>
+        <a href="orders.html" id="5" >My Orders</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Orders Section -->
+  <div class="hero2">
+    <h1>My Orders</h1>
+    <div id="orders-container"></div>
+  </div>
+
+
+  <!-- Script -->
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    const ordersContainer = document.getElementById('orders-container');
+
+    function setupAuthState() {
+      const logout = document.getElementById('logout-link');
+      const loginBtn = document.getElementById('login-signup-btn');
+      const ordersLink = document.getElementById('5');
+
+      if (user) {
+        logout.style.display = 'inline';
+        loginBtn.style.display = 'none';
+        ordersLink.style.display = 'inline';
+      } else {
+        logout.style.display = 'none';
+        loginBtn.style.display = 'inline';
+        ordersLink.style.display = 'none';
+      }
+    }
+
+    if (!user) {
+      ordersContainer.innerHTML = `
+  <div class="no-orders-wrapper">
+    <img src="order_no.jpg" alt="No Orders" class="no-orders-img">
+    <p class="no-orders">Oops! You have no orders yet.</p>
+  </div>
+`;
+
+    } else {
+      const allOrders = JSON.parse(localStorage.getItem('orders') || "{}");
+      const userOrders = allOrders[user.email] || [];
+
+      if (userOrders.length === 0) {
+        ordersContainer.innerHTML = '<p class="no-orders">No orders found.</p>';
+      } else {
+        userOrders.forEach((order, index) => {
+          const orderDiv = document.createElement('div');
+          orderDiv.className = 'order';
+          orderDiv.innerHTML = `
+            <strong>Order #${index + 1}</strong><br>
+            <b>Name:</b> ${order.name}<br>
+            <b>Email:</b> ${order.email}<br>
+            <b>Phone:</b> ${order.phone}<br>
+            <b>From:</b> ${order.from}<br>
+            <b>To:</b> ${order.to}<br>
+            <b>Type:</b> ${order.type}<br>
+            <b>Message:</b> ${order.message}
+          `;
+          ordersContainer.appendChild(orderDiv);
+        });
+      }
+    }
+
+    document.getElementById('logout-link').addEventListener('click', () => {
+      localStorage.removeItem('user');
+      alert("Logout successful!");
+      location.href = 'index.html';
+    });
+
+    setupAuthState();
+  </script>
+
+  <!-- Footer -->
+  <footer>
+    <div class="services-section">
+      <div class="services-list security">
+        <h2>Security Services</h2>
+        <ul>
+          <li>~Guarding Services</li>
+          <li>~Safe Keeping</li>
+          <li>~Secure Valuables</li>
+          <li>~Dispatch Arrangement</li>
+        </ul>
+      </div>
+      <div class="services-list logistics">
+        <h2>Logistics Services</h2>
+        <ul>
+          <li>~Consignments Handling</li>
+          <li>~Express Delivery</li>
+          <li>~Jet Service</li>
+          <li>~Secured Delivery</li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <h3>&copy; 2025 QuickShip. All Rights Reserved.</h3>
+    </div>
+    <div class="powered-by">
+      <p>Powered by QuickShip <img src="wsp.jpg" alt="Logo" height="50px" width="110px"></p>
+    </div>
+  </footer>
+</body>
+</html>
