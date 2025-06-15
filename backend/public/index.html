@@ -235,11 +235,12 @@
         message: document.getElementById('message').value,
       };
 
-       const response = await fetch('https://quickship-2.onrender.com/api/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  });
+     const response = await fetch('https://quickship-2.onrender.com/api/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload) // ✅ Corrected
+});
+
 
       const result = await response.json();
       const resultContainer = document.getElementById('result-container');
