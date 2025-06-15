@@ -1,16 +1,18 @@
-const mysql = require('mysql2/promise'); // Use promise version directly
+
+require('dotenv').config();
+const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '', // Add your MySQL password
-  database: 'quickship_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 });
 
-// Test connection on startup
+// Optional: Test connection
 pool.getConnection()
   .then(conn => {
     console.log('✅ Connected to MySQL database');

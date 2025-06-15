@@ -3,14 +3,13 @@ const app = express();
 const path = require('path');
 const pool = require('./db');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Setup transporter (use Gmail or other SMTP)
-require('dotenv').config();
-
+// Setup transporter using environment variables
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -19,9 +18,10 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
 app.post('/api/submit', async (req, res) => {
   const { name, email, phone, from, to, type, message } = req.body;
+
+  console.log("📝 Received form data:", req.body); // Debug log
 
   try {
     const sql = `
@@ -30,9 +30,9 @@ app.post('/api/submit', async (req, res) => {
     `;
     await pool.execute(sql, [name, email, phone, from, to, type, message]);
 
-    // ✅ Send confirmation email
+    // Send confirmation email
     const mailOptions = {
-      from: 'your-email@gmail.com', // same as in transporter
+      from: process.env.EMAIL_USER,
       to: email,
       subject: 'QuickShip: Shipment Confirmation',
       html: `
@@ -57,17 +57,18 @@ app.post('/api/submit', async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    console.error("❌ Failed to save shipment:", err.message);
+    console.error("❌ Failed to save shipment:", err);
     res.status(500).json({ success: false, message: "Database error" });
   }
 });
 
-// Root
+// Serve index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
